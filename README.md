@@ -94,12 +94,25 @@ The good: cheapest housing tier by about $900 a year, and the singles are real s
 
 **Question:**
 
+How much printing credit does each student receive per semester?
+
 **Answer:**
+
+Each student receives $30 of printing credit per semester, which is roughly
+600 black-and-white pages. Colour printing costs eight times as much per page.
+
+**Source:** `admin_printing_quota.txt`
 
 ```
 ```
 
 **My relevance cutoff:**
+
+I kept the cutoff at **0.6**. The five in-corpus questions had best distances
+from 0.2037 to 0.3719, while the five out-of-scope questions ranged from
+0.7873 to 0.9228, leaving a clear gap between 0.3719 and 0.7873. A lower
+cutoff could refuse a real question such as printing, while a higher cutoff
+would admit more unrelated questions and risk unsupported answers.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -112,7 +125,16 @@ The good: cheapest housing tier by about $900 a year, and the singles are real s
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| How are juniors and seniors prioritized in the housing lottery? | Yes | 0.2050 |
+| What is the latest week when I can declare a course pass/fail? | Yes | 0.2326 |
+| How much printing credit does each student receive per semester? | Yes | 0.3719 |
+| What happens to my GPA if I withdraw from a course by the deadline? | Yes | 0.3525 |
+| Do dining dollars roll over from spring to the following autumn? | Yes | 0.2037 |
+| What is the capital of Mongolia? | No | 0.7873 |
+| How do I change the oil in a diesel engine? | No | 0.9228 |
+| Who won the 1994 World Cup? | No | 0.8474 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8243 |
+| How do I write a for loop in Rust? | No | 0.8768 |
 
 ## How I Used AI
 
