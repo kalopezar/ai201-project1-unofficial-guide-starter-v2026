@@ -27,6 +27,12 @@
 
      Milestone 5. -->
 
+This project answers questions about the `campus_life` corpus, which contains
+short administrative notes, course information, dining details, and housing
+advice. It retrieves the most relevant document chunks, refuses questions that
+fall outside the corpus, and asks the model to answer only from the retrieved
+text. Answers name the source document so the underlying fact can be checked.
+
 ## Chunking Strategy
 
 **Chunk size:**
@@ -149,7 +155,19 @@ would admit more unrelated questions and risk unsupported answers.
 
 **1.**
 
+I asked AI, "Could someone else check each of these five acceptance criteria
+without asking what I meant?" It pointed out that the first three criteria
+needed corpus-specific reasons and that the chunk and citation criteria needed
+observable targets, so I added those explanations and measurable targets to
+`criteria.md`.
+
 **2.**
+
+I asked AI to inspect the starter's 88-document, 88-chunk baseline and suggest a
+strategy that would preserve complete thoughts in `campus_life`. Its first
+paragraph-only version created heading-only chunks and grew the count to 271,
+so I changed `chunker.py` to join short headings to the paragraph they
+introduce; the final index produced 183 chunks.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
