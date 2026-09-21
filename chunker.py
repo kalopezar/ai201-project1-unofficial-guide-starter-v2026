@@ -1,7 +1,7 @@
 """
 Stage 2 of the pipeline: splitting documents into chunks.
 
-⚠️ THIS IS THE FILE I CHANGE IN MILESTONE 3.
+⚠️ THIS IS THE FILE YOU CHANGE IN MILESTONE 3.
 
 `split_documents` below is deliberately plain. It cuts every document into
 fixed-size pieces with a fixed overlap and pays no attention to where sentences
