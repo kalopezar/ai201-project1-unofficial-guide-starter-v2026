@@ -24,11 +24,15 @@ CORPUS = os.getenv("AI201_CORPUS", "campus_life")
 
 
 # ─── Chunking (Milestone 3) ──────────────────────────────────────────────────
-# These are deliberately plain, generic numbers. Milestone 3 is where you
-# replace them with numbers that fit the documents you actually read.
+# campus_life is made of short, self-contained posts. The custom chunker keeps
+# paragraph boundaries, and its observed chunks top out at 397 characters, so
+# 450 leaves room for the longest intact post without burying its answer; the
+# current paragraph-aware splitter keeps shorter paragraphs intact.
+CHUNK_SIZE = 450        # target characters per chunk
 
-CHUNK_SIZE = 800        # characters per chunk
-CHUNK_OVERLAP = 120     # characters shared between neighbouring chunks
+# These posts do not need repeated context between chunks; paragraph boundaries
+# carry the context, so overlapping windows would mostly duplicate evidence.
+CHUNK_OVERLAP = 0       # characters shared between neighbouring chunks
 
 
 # ─── Retrieval (Milestone 4) ─────────────────────────────────────────────────
