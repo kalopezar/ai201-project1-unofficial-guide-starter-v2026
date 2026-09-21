@@ -23,8 +23,10 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+The campus-life corpus covers many administrative topics, but a question can
+still be harder when its answer is concentrated in one document. Four of five
+requires retrieval to work for nearly all of the questions without treating one
+difficult topic as evidence that the whole pipeline failed.
 
 ---
 
@@ -33,8 +35,10 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+I chose all five because every retrieved result carries source metadata from
+the indexed document, so naming a source is a direct output requirement rather
+than a judgment about answer quality. Allowing four would accept an answer that
+cannot be checked against the corpus.
 
 ---
 
@@ -50,8 +54,10 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+Four of five allows for one ambiguous out-of-scope question whose wording may
+look similar to a campus-life topic, while still requiring the gate to protect
+the system most of the time. A looser target would allow too many unsupported
+answers, while five of five would leave no tolerance for embedding uncertainty.
 
 ---
 
@@ -69,10 +75,16 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
+At least 4 of 5 sampled chunks contain a complete thought, with no sentence
+cut off at the beginning or end.
 
 
 **Why this target:**
 
+The campus-life documents are short advice or administrative posts, so a chunk
+should usually preserve the whole fact needed to answer a question. Four of
+five allows one unusually shaped document to be imperfect while still requiring
+the chunking strategy to preserve context for most questions.
 
 
 ---
@@ -87,10 +99,17 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
+For all 5 in-scope test questions, the source document named in the answer
+contains the expected fact or phrase recorded for that question in
+`questions.py`.
 
 
 **Why this target:**
 
+Source names are only useful if they support the answer. I care about all five
+questions because each one has a specific expected fact and the campus-life
+documents are short, self-contained sources, so a citation should be
+straightforward to verify.
 
 
 ---
