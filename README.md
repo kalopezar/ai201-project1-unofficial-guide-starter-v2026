@@ -144,7 +144,7 @@ would admit more unrelated questions and risk unsupported answers.
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
+<!-- Specific moments. For each: what you asked for, what came back, and
      what you changed about it.
 
      "I asked Claude to write the chunking function from my notes. It ignored
@@ -168,6 +168,17 @@ strategy that would preserve complete thoughts in `campus_life`. Its first
 paragraph-only version created heading-only chunks and grew the count to 271,
 so I changed `chunker.py` to join short headings to the paragraph they
 introduce; the final index produced 183 chunks.
+
+**3.**
+
+During Unit 2, I asked Copilot why the withdrawal question failed in every
+before run even though the answer named the right fact and source. It compared
+the expected phrase in `questions.py` with `scorer.py::judge` and found that the
+scorer required the exact text `doesn't affect GPA`, while the answer said
+`doesn't affect your GPA`. I changed the scorer to check retrieved chunks
+instead; the after run then measured 5 of 5 for all five questions. That fixed
+the measurement, not retrieval itself, so I reported the distinction in the
+results.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
@@ -237,76 +248,84 @@ introduce; the final index produced 183 chunks.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | The recorded score was 4 of 5 in each run, meeting the 4-of-5 target. This score comes from matching generated answers, not directly inspecting the retrieved chunk text. |
+| 2 | Every answer names a source | MET | All five answers named a source in each of the three runs, meeting the 5-of-5 target every time. |
+| 3 | Gate stops out-of-corpus questions | MET | The gate refused all five out-of-corpus questions, exceeding the 4-of-5 target. |
+| 4 | Sampled chunks contain complete thoughts | MET | All five sampled chunks read as complete thoughts, meeting the 4-of-5 target. |
+| 5 | Cited source contains the expected fact | MET | Each of the five cited source documents contained the expected fact recorded for its question, meeting the 5-of-5 target. |
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
-
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
-
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
+No criterion was recorded as missed: each run met its target. The targets were
+not all equally easy; criterion 1 only just met 4 of 5, while the other checks
+scored 5 of 5. I cannot treat criterion 1 as a direct retrieval diagnosis,
+though, because `scorer.py::judge` checks whether the generated answer contains
+the expected phrase rather than whether a retrieved chunk contains the answer.
+For the withdrawal question, `questions.py` expects `doesn't affect GPA`, but
+the accurate answer says “doesn't affect your GPA,” so the literal substring
+check marks it wrong. That is a measurement defect, not evidence that a
+particular retrieval or generation stage failed. Since all five out-of-scope
+questions were refused, I would tighten criterion 3 from 4 of 5 to 5 of 5 in a
+future evaluation.
 
 ## The Improvement
 
 **What I changed:**
 
+I changed `scorer.py::judge` to search the expected phrase in the retrieved
+chunks instead of requiring it to appear verbatim in the generated answer.
+
 **Why I picked it:**
 
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+The diagnosis showed that the withdrawal answer was marked wrong only because
+the answer inserted “your”; checking retrieved chunk text measures criterion 1
+directly and avoids that wording-only false negative.
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 4. Sampled chunks contain complete thoughts | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 5. Cited source contains the expected fact | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+
+The three-run outputs are in `results/run_2026-09-27_2128_after.md`, produced
+by `run_eval.py::main`; the out-of-scope results are produced by
+`run_eval.py::check_out_of_scope`. The gate refused 5 of 5. For example, the
+withdrawal answer was: “Withdrawing puts a "W" on the transcript that does not
+affect your GPA (admin_withdrawal_deadline.txt).” Its retrieved chunk contains
+the expected fact. The five sampled chunks in Unit 1 are unchanged by this
+scorer-only edit; all five remain complete thoughts.
 
 **Did it help?**
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
-
-     Milestone 4. -->
+It helped the measurement, not retrieval itself: criterion 1 now checks the
+retrieved chunks directly and scored 5 of 5 in all three runs, up from the
+before run's 4 of 5 answer-substring score. The withdrawal fact was present in
+the retrieved chunk even though the generated answer used different wording.
+The complete after run also met the source and citation targets in all three
+runs, and the gate refused all five out-of-scope questions.
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
-
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+No criterion was missed after the change: all five met their targets in the
+after evaluation. Two limitations remain. First, `scorer.py::judge` checks for
+the expected phrase literally in retrieved text, so a correct paraphrase in a
+chunk could still be counted as a miss; I would replace that check with a
+small, reviewed set of answer-bearing passages or a semantic check validated
+against those passages. Second, whether a cited source supports the generated
+answer was checked manually for these five questions, not automatically; I
+would add citation-to-source checks and test more questions before relying on
+it beyond this corpus. I stopped after the scorer change because the milestone
+called for one measured improvement, the targets were met, and another change
+would make it harder to tell what caused the results.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
-
-     Milestone 5. -->
+I would rewrite criterion 1 to say: “For at least 4 of 5 questions, one of the
+top five retrieved chunks contains the expected phrase listed for that
+question in `questions.py`.” “Contains the answer” was too subjective to score
+consistently; checking the retrieved text against a phrase chosen in advance
+makes the retrieval test direct and repeatable.
