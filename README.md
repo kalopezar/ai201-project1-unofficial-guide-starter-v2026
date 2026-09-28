@@ -184,27 +184,45 @@ introduce; the final index produced 183 chunks.
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
-
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
-
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 4 of 5 | 4 of 5 | 4 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 4. Sampled chunks contain complete thoughts | 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 5. Cited source contains the expected fact | 5 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+**Evidence and measurement notes**
+
+- **Criterion 1:** `results/run_2026-09-23_2129.md`, produced by
+     `run_eval.py::main`, records 4 of 5 answers as passing in each run. For
+     example, the withdrawal answer was: “Withdrawing puts a W on the transcript
+     that doesn't affect your GPA (admin_withdrawal_deadline.txt).” The scorer
+     checks for the exact expected substring `doesn't affect GPA`, so it marks
+     this correct fact as a failure because the answer inserts “your.” Thus 4 of
+     5 is the recorded answer-match result; the log does not independently expose
+     retrieved chunk text for a direct chunk-content check.
+- **Criterion 2:** The same log's `run_eval.py::main` real outputs name sources
+     for all five questions in all three runs. Representative exact output:
+     “You can declare a course pass/fail as late as week eight, after you've seen
+     your midterm (admin_pass_fail_option.txt).”
+- **Criterion 3:** `run_eval.py::check_out_of_scope` reports “Refused 5 of 5”
+     at cutoff 0.6 in the same log. Its five distances are 0.787, 0.923, 0.847,
+     0.824, and 0.877, all above the cutoff. The check is deterministic, so the
+     same 5 of 5 is reported in each run column.
+- **Criterion 4:** I manually checked the five actual chunks printed by
+     `app.py chunks -n 5`, produced by `chunker.py::split_documents` and pasted
+     above under “Sample Chunks.” All five read as complete thoughts, so this
+     one-time sample check is repeated in each column; these are not three new
+     chunking runs.
+- **Criterion 5:** I checked each named source against its expected fact in
+     `questions.py`. The generated answers and citations in
+     `results/run_2026-09-23_2129.md` include: “accumulated credit hours first”
+     (`admin_housing_lottery.txt`); “week eight” (`admin_pass_fail_option.txt`);
+     “$30” (`admin_printing_quota.txt`); “doesn't affect your GPA”
+     (`admin_withdrawal_deadline.txt`); and “left in May disappears”
+     (`admin_dining_dollars.txt`). All five cited files contain the corresponding
+     expected fact, so this manual source check is the same for each run.
 
 ## Verdicts
 
